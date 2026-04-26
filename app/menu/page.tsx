@@ -71,7 +71,7 @@ export default function Menu() {
           </div>
 
           {/* Category tabs */}
-          <div style={{ display: "flex", gap: 0, overflowX: "auto", paddingBottom: 0, scrollbarWidth: "none" }}>
+          <div style={{ display: "flex", gap: 0, overflowX: "auto", paddingBottom: 0, scrollbarWidth: "none" as any, WebkitOverflowScrolling: "touch" as any, cursor: "grab" }}>
             {availableCategories.map(cat => (
               <button key={cat} onClick={() => setActiveCategory(cat)} style={{
                 background: "none", border: "none", padding: "12px 20px", fontSize: 11,
