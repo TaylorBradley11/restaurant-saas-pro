@@ -6,7 +6,7 @@ import Link from "next/link";
 type MenuItem = { id: string; name: string; price: number; description?: string; emoji: string; category: string; available: boolean };
 type CartItem = { name: string; price: number; emoji: string };
 
-const CATEGORIES = ["Appetizers","Special Rolls","Deep Fried Sushi Rolls","Fusion Bowls","Nigiri","Regular Rolls","Bento Box","Fried Rice & Noodle","Noodle Soup & Salad","Salad & Sides","Rice Bowls","Beverages","Dessert"];
+const CATEGORIES = ["Appetizers","Special Rolls","Deep Fried Sushi Rolls","Fusion Bowls","Nigiri","Regular Rolls","Bento Box","Fried Rice & Noodle","Noodle Soup & Salad","Salad & Sides","Rice Bowls","Beverages","Dessert","Burmese & Asian","Curry","Sushi Rolls","Bowls","Drinks"];
 
 export default function Menu() {
   const [items, setItems] = useState<MenuItem[]>([]);
