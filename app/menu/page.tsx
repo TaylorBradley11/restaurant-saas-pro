@@ -63,7 +63,7 @@ export default function Menu() {
       </nav>
 
       {/* Hero banner */}
-      <div style={{ background: "linear-gradient(135deg, #1a1510 0%, #0f0e0c 50%, #12100d 100%)", padding: "32px 32px 0", borderBottom: "1px solid rgba(184,150,110,0.1)" }}>
+      <div style={{ background: "linear-gradient(135deg, #1a1510 0%, #0f0e0c 50%, #12100d 100%)", padding: "32px 32px 0", borderBottom: "1px solid rgba(184,150,110,0.1)", overflowX: "visible" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ marginBottom: 24 }}>
             <h1 style={{ fontFamily: "var(--serif)", fontSize: 14, fontWeight: 300, letterSpacing: "0.2em", textTransform: "uppercase", color: "#b8966e", marginBottom: 4 }}>Order Online</h1>
