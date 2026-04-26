@@ -98,7 +98,23 @@ export default function Menu() {
         {/* Scrollable category tabs — full width, no max-width container */}
         <div style={{
           display: "flex",
-          overflowX: "auto",
+          <div
+  ref={(el) => {
+    if (!el) return;
+    let isDown = false, startX = 0, scrollLeft = 0;
+    el.addEventListener("mousedown", (e) => { isDown = true; startX = e.pageX - el.offsetLeft; scrollLeft = el.scrollLeft; });
+    el.addEventListener("mouseleave", () => { isDown = false; });
+    el.addEventListener("mouseup", () => { isDown = false; });
+    el.addEventListener("mousemove", (e) => { if (!isDown) return; e.preventDefault(); el.scrollLeft = scrollLeft - (e.pageX - el.offsetLeft - startX); });
+  }}
+  style={{
+    display: "flex",
+    overflowX: "auto",
+    borderBottom: "1px solid rgba(184,150,110,0.12)",
+    cursor: "grab",
+    userSelect: "none",
+  } as React.CSSProperties}
+>,
           borderBottom: "1px solid rgba(184,150,110,0.12)",
           msOverflowStyle: "none",
         } as React.CSSProperties}>
