@@ -33,3 +33,4 @@ button { font-family: var(--sans); cursor: pointer; }
 .fade-up-2 { animation: fadeUp 0.7s 0.15s ease both; }
 .fade-up-3 { animation: fadeUp 0.7s 0.25s ease both; }
 .fade-up-4 { animation: fadeUp 0.7s 0.35s ease both; }
+.tab-scroll::-webkit-scrollbar { display: none; }
