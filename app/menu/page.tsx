@@ -8,20 +8,37 @@ type CartItem = { name: string; price: number; emoji: string };
 
 const CATEGORIES = ["Appetizers","Special Rolls","Deep Fried Sushi Rolls","Fusion Bowls","Nigiri","Regular Rolls","Bento Box","Fried Rice & Noodle","Noodle Soup & Salad","Salad & Sides","Rice Bowls","Beverages","Dessert"];
 
-const CATEGORY_DESCRIPTIONS: Record<string, string> = {
-  "Appetizers": "Start your meal right",
-  "Special Rolls": "Chef's signature creations",
-  "Deep Fried Sushi Rolls": "Golden, crispy perfection",
-  "Fusion Bowls": "East meets West in a bowl",
-  "Nigiri": "Simply fish on rice",
-  "Regular Rolls": "Classic favourites",
-  "Bento Box": "A complete meal",
-  "Fried Rice & Noodle": "Wok-tossed to order",
-  "Noodle Soup & Salad": "Burmese soul food",
-  "Salad & Sides": "Fresh accompaniments",
-  "Rice Bowls": "Burmese curry over rice",
-  "Beverages": "Drinks & bubble tea",
-  "Dessert": "Sweet endings",
+// Free Unsplash images for each category
+const CAT_IMAGES: Record<string, string> = {
+  "Appetizers": "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=1200&q=80",
+  "Special Rolls": "https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=1200&q=80",
+  "Deep Fried Sushi Rolls": "https://images.unsplash.com/photo-1559410545-0bdcd187e0a6?w=1200&q=80",
+  "Fusion Bowls": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&q=80",
+  "Nigiri": "https://images.unsplash.com/photo-1563612116625-3012372fccce?w=1200&q=80",
+  "Regular Rolls": "https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=1200&q=80",
+  "Bento Box": "https://images.unsplash.com/photo-1582450871972-ab5ca641643d?w=1200&q=80",
+  "Fried Rice & Noodle": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=1200&q=80",
+  "Noodle Soup & Salad": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=1200&q=80",
+  "Salad & Sides": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=1200&q=80",
+  "Rice Bowls": "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?w=1200&q=80",
+  "Beverages": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80",
+  "Dessert": "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=1200&q=80",
+};
+
+const CAT_META: Record<string, { desc: string; accent: string }> = {
+  "Appetizers":             { desc: "Start your journey", accent: "#c4965a" },
+  "Special Rolls":          { desc: "Chef's signatures", accent: "#e05a5a" },
+  "Deep Fried Sushi Rolls": { desc: "Golden & crispy", accent: "#d4a030" },
+  "Fusion Bowls":           { desc: "East meets West", accent: "#5ab4c4" },
+  "Nigiri":                 { desc: "Simply fish on rice", accent: "#c4965a" },
+  "Regular Rolls":          { desc: "Classic favourites", accent: "#7ab85a" },
+  "Bento Box":              { desc: "A complete meal", accent: "#a05ac4" },
+  "Fried Rice & Noodle":    { desc: "Wok-tossed to order", accent: "#c4965a" },
+  "Noodle Soup & Salad":    { desc: "Burmese soul food", accent: "#5a7ec4" },
+  "Salad & Sides":          { desc: "Fresh accompaniments", accent: "#7ab85a" },
+  "Rice Bowls":             { desc: "Burmese curry bowls", accent: "#c47a5a" },
+  "Beverages":              { desc: "Drinks & bubble tea", accent: "#c45a9a" },
+  "Dessert":                { desc: "Sweet endings", accent: "#d4a030" },
 };
 
 export default function Menu() {
@@ -52,7 +69,7 @@ export default function Menu() {
     if (!el) return;
     const onDown = (e: MouseEvent) => { isDragging.current = true; startX.current = e.pageX - el.offsetLeft; scrollLeftRef.current = el.scrollLeft; el.style.cursor = "grabbing"; };
     const onUp = () => { isDragging.current = false; if (tabsRef.current) tabsRef.current.style.cursor = "grab"; };
-    const onMove = (e: MouseEvent) => { if (!isDragging.current) return; e.preventDefault(); const x = e.pageX - el.offsetLeft; el.scrollLeft = scrollLeftRef.current - (x - startX.current); };
+    const onMove = (e: MouseEvent) => { if (!isDragging.current) return; e.preventDefault(); el.scrollLeft = scrollLeftRef.current - (e.pageX - el.offsetLeft - startX.current); };
     el.addEventListener("mousedown", onDown);
     window.addEventListener("mouseup", onUp);
     el.addEventListener("mousemove", onMove);
@@ -80,110 +97,103 @@ export default function Menu() {
 
   const availableCategories = CATEGORIES.filter(c => items.some(i => i.category === c));
   const currentItems = items.filter(i => i.category === activeCategory);
+  const accent = CAT_META[activeCategory]?.accent || "#c4965a";
+  const heroImage = CAT_IMAGES[activeCategory] || CAT_IMAGES["Appetizers"];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0906", fontFamily: "var(--sans)", color: "#faf8f4", position: "relative" }}>
+    <div style={{ minHeight: "100vh", background: "#080706", fontFamily: "var(--sans)", color: "#faf8f4" }}>
 
-      {/* Ambient glow */}
-      <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: 400, background: "radial-gradient(ellipse at 50% -20%, rgba(196,150,90,0.07) 0%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
-
-      {/* Nav */}
-      <nav style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(10,9,6,0.92)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(196,150,90,0.12)", padding: "0 40px" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
-          <Link href="/" style={{ fontFamily: "var(--serif)", fontSize: 13, fontWeight: 400, letterSpacing: "0.3em", textTransform: "uppercase", color: "var(--gold2)" }}>
-            SHA MUU
-          </Link>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(255,255,255,0.2)", display: "none" }}>
-              Sushi & Burmese Fusion
-            </span>
-            <button
-              onClick={() => setCartOpen(true)}
-              style={{
-                display: "flex", alignItems: "center", gap: 8,
-                background: cart.length > 0 ? "var(--gold)" : "rgba(255,255,255,0.06)",
-                color: cart.length > 0 ? "#0a0906" : "rgba(255,255,255,0.4)",
-                border: cart.length > 0 ? "none" : "1px solid rgba(255,255,255,0.1)",
-                borderRadius: 24, padding: cart.length > 0 ? "10px 22px" : "10px 20px",
-                fontSize: 12, letterSpacing: "0.06em", cursor: "pointer",
-                fontFamily: "var(--sans)", fontWeight: cart.length > 0 ? 600 : 400,
-                transition: "all 0.3s",
-              }}
-            >
-              <span style={{ fontSize: 14 }}>🛒</span>
-              {cart.length > 0 ? `${cart.length} item${cart.length > 1 ? "s" : ""} · $${total.toFixed(2)}` : "Cart"}
-            </button>
+      {/* Sticky Nav */}
+      <nav style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(8,7,6,0.96)", backdropFilter: "blur(24px)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+            <Link href="/" style={{ fontFamily: "var(--serif)", fontSize: 20, fontWeight: 400, letterSpacing: "0.2em", textTransform: "uppercase", color: "#e0bc8a" }}>SHA MUU</Link>
+            <div style={{ width: 1, height: 18, background: "rgba(255,255,255,0.1)" }} />
+            <span style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.2)" }}>Online Order</span>
           </div>
+          <button onClick={() => setCartOpen(true)} style={{ display: "flex", alignItems: "center", gap: 10, background: cart.length > 0 ? accent : "rgba(255,255,255,0.05)", color: cart.length > 0 ? "#080706" : "rgba(255,255,255,0.35)", border: cart.length > 0 ? "none" : "1px solid rgba(255,255,255,0.08)", borderRadius: 32, padding: "10px 22px", fontSize: 12, letterSpacing: "0.06em", cursor: "pointer", fontFamily: "var(--sans)", fontWeight: cart.length > 0 ? 700 : 400, transition: "all 0.3s", boxShadow: cart.length > 0 ? `0 4px 20px ${accent}50` : "none" }}>
+            <span>🛒</span>
+            {cart.length > 0 ? <><span>{cart.length} item{cart.length > 1 ? "s" : ""}</span><span style={{ background: "rgba(0,0,0,0.2)", borderRadius: 10, padding: "2px 10px" }}>${total.toFixed(2)}</span></> : <span>Cart</span>}
+          </button>
         </div>
       </nav>
 
-      {/* Hero section */}
-      <div style={{ position: "relative", zIndex: 1, padding: "48px 40px 0", background: "linear-gradient(180deg, rgba(196,150,90,0.04) 0%, transparent 100%)" }}>
-        <div style={{ marginBottom: 32 }}>
-          <div style={{ fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--gold)", marginBottom: 12, opacity: 0.7 }}>
-            ✦ Order Online · 23 N 900 W · Salt Lake City ✦
-          </div>
-          <h1 style={{ fontFamily: "var(--serif)", fontSize: "clamp(40px, 6vw, 72px)", fontWeight: 300, lineHeight: 1, letterSpacing: "-0.02em", color: "#faf8f4" }}>
-            Fresh. Authentic.<br />
-            <em style={{ color: "var(--gold)", fontStyle: "italic" }}>Unforgettable.</em>
-          </h1>
-        </div>
+      {/* Full-width hero banner — changes with category */}
+      <div style={{ position: "relative", height: 340, overflow: "hidden" }}>
+        <img
+          src={heroImage}
+          alt={activeCategory}
+          style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", transition: "opacity 0.5s", filter: "brightness(0.45) saturate(0.9)" }}
+        />
+        {/* Gradient overlays */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(8,7,6,0.2) 0%, rgba(8,7,6,0.95) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: `linear-gradient(135deg, ${accent}20 0%, transparent 60%)` }} />
 
-        {/* Category tabs */}
+        {/* Hero text */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 40px 32px", maxWidth: 1400, margin: "0 auto" }}>
+          <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+              <div style={{ width: 28, height: 1, background: accent }} />
+              <span style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: accent }}>Sha Muu · 23 N 900 W · Salt Lake City</span>
+            </div>
+            <h1 style={{ fontFamily: "var(--serif)", fontSize: "clamp(48px, 7vw, 88px)", fontWeight: 300, lineHeight: 0.9, letterSpacing: "-0.02em", color: "#faf8f4", marginBottom: 16 }}>
+              Fresh &amp; <em style={{ color: accent, fontStyle: "italic", transition: "color 0.4s" }}>Authentic</em>
+            </h1>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", letterSpacing: "0.06em" }}>
+              Sushi · Burmese Cuisine · Asian Fusion
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Category tabs */}
+      <div style={{ background: "#080706", borderBottom: "1px solid rgba(255,255,255,0.05)", position: "sticky", top: 64, zIndex: 90 }}>
         <div
           ref={tabsRef}
-          style={{ display: "flex", overflowX: "scroll", cursor: "grab", userSelect: "none", gap: 4, paddingBottom: 0, marginLeft: -40, marginRight: -40, paddingLeft: 40 }}
+          style={{ display: "flex", gap: 8, overflowX: "scroll", cursor: "grab", userSelect: "none", padding: "16px 40px" }}
         >
-          {availableCategories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              style={{
-                flexShrink: 0,
-                background: activeCategory === cat ? "var(--gold)" : "rgba(255,255,255,0.04)",
-                color: activeCategory === cat ? "#0a0906" : "rgba(255,255,255,0.45)",
-                border: activeCategory === cat ? "none" : "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 24,
-                padding: "10px 20px",
-                fontSize: 11,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                cursor: "pointer",
-                fontFamily: "var(--sans)",
-                fontWeight: activeCategory === cat ? 600 : 400,
-                whiteSpace: "nowrap",
-                transition: "all 0.2s",
-                marginBottom: 24,
-              }}
-            >
-              {cat}
-            </button>
-          ))}
-          <div style={{ flexShrink: 0, width: 40 }} />
+          {availableCategories.map(cat => {
+            const isActive = activeCategory === cat;
+            const catAccent = CAT_META[cat]?.accent || "#c4965a";
+            return (
+              <button key={cat} onClick={() => setActiveCategory(cat)} style={{ flexShrink: 0, background: isActive ? catAccent : "rgba(255,255,255,0.04)", color: isActive ? "#080706" : "rgba(255,255,255,0.4)", border: isActive ? "none" : "1px solid rgba(255,255,255,0.07)", borderRadius: 32, padding: "10px 20px", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer", fontFamily: "var(--sans)", fontWeight: isActive ? 700 : 400, whiteSpace: "nowrap", transition: "all 0.22s", boxShadow: isActive ? `0 4px 16px ${catAccent}50` : "none" }}>
+                {cat}
+              </button>
+            );
+          })}
+          <div style={{ flexShrink: 0, width: 32 }} />
         </div>
       </div>
 
-      {/* Category header */}
-      <div style={{ position: "relative", zIndex: 1, padding: "0 40px 32px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 16 }}>
-          <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 300, color: "#faf8f4", letterSpacing: "-0.01em" }}>
+      {/* Category title + count */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "40px 40px 24px", display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+        <div>
+          <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(32px, 4vw, 56px)", fontWeight: 300, color: "#faf8f4", letterSpacing: "-0.01em", lineHeight: 1, marginBottom: 6 }}>
             {activeCategory}
           </h2>
-          <span style={{ fontFamily: "var(--serif)", fontSize: 18, color: "rgba(255,255,255,0.2)", fontStyle: "italic" }}>
-            {CATEGORY_DESCRIPTIONS[activeCategory]}
-          </span>
+          <p style={{ fontFamily: "var(--serif)", fontSize: 16, color: "rgba(255,255,255,0.3)", fontStyle: "italic" }}>
+            {CAT_META[activeCategory]?.desc}
+          </p>
         </div>
-        <div style={{ width: 48, height: 1, background: "var(--gold)", marginTop: 12, opacity: 0.6 }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 8, paddingBottom: 8 }}>
+          <div style={{ width: 6, height: 6, borderRadius: "50%", background: accent }} />
+          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", letterSpacing: "0.08em" }}>{currentItems.length} items</span>
+        </div>
       </div>
 
-      {/* Menu grid */}
-      <div style={{ position: "relative", zIndex: 1, padding: "40px 40px 120px" }}>
+      {/* Divider */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px" }}>
+        <div style={{ height: 1, background: `linear-gradient(to right, ${accent}60, transparent)` }} />
+      </div>
+
+      {/* Menu items grid */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "32px 40px 160px" }}>
         {loading ? (
-          <div style={{ textAlign: "center", padding: "100px 0" }}>
-            <div style={{ fontFamily: "var(--serif)", fontSize: 32, fontWeight: 300, color: "rgba(255,255,255,0.15)", fontStyle: "italic" }}>Loading menu...</div>
+          <div style={{ textAlign: "center", padding: "120px 0" }}>
+            <div style={{ fontFamily: "var(--serif)", fontSize: 32, fontWeight: 300, color: "rgba(255,255,255,0.1)", fontStyle: "italic" }}>Loading...</div>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 2 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))", gap: 12 }}>
             {currentItems.map((item, idx) => {
               const isHovered = hoveredItem === item.id;
               const isAdded = justAdded === item.id;
@@ -193,63 +203,42 @@ export default function Menu() {
                   onMouseEnter={() => setHoveredItem(item.id)}
                   onMouseLeave={() => setHoveredItem(null)}
                   style={{
-                    background: isHovered ? "rgba(196,150,90,0.06)" : "rgba(255,255,255,0.02)",
-                    border: isAdded ? "1px solid rgba(196,150,90,0.8)" : isHovered ? "1px solid rgba(196,150,90,0.25)" : "1px solid rgba(255,255,255,0.05)",
-                    borderRadius: 16,
-                    padding: "24px",
+                    background: isHovered ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.02)",
+                    border: isAdded ? `1px solid ${accent}` : isHovered ? "1px solid rgba(255,255,255,0.1)" : "1px solid rgba(255,255,255,0.05)",
+                    borderRadius: 20,
+                    padding: "24px 26px",
                     display: "flex",
-                    gap: 18,
-                    transition: "all 0.25s",
-                    transform: isAdded ? "scale(1.02)" : "scale(1)",
-                    cursor: "default",
-                    animation: `fadeUp 0.5s ${idx * 0.03}s ease both`,
+                    gap: 20,
+                    alignItems: "flex-start",
+                    transition: "all 0.22s",
+                    transform: isAdded ? "scale(1.015)" : "scale(1)",
+                    boxShadow: isAdded ? `0 0 0 3px ${accent}25, 0 12px 40px rgba(0,0,0,0.4)` : isHovered ? "0 8px 32px rgba(0,0,0,0.35)" : "none",
+                    animation: `fadeUp 0.45s ${Math.min(idx * 0.035, 0.4)}s ease both`,
                   }}
                 >
-                  {/* Emoji */}
-                  <div style={{
-                    width: 64, height: 64, borderRadius: 14,
-                    background: isHovered ? "rgba(196,150,90,0.12)" : "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(196,150,90,0.15)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 28, flexShrink: 0,
-                    transition: "all 0.25s",
-                    transform: isHovered ? "scale(1.05)" : "scale(1)",
-                  }}>
+                  {/* Emoji box */}
+                  <div style={{ width: 72, height: 72, borderRadius: 16, background: isHovered ? `${accent}20` : "rgba(255,255,255,0.04)", border: `1px solid ${isHovered ? accent + "50" : "rgba(255,255,255,0.07)"}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, flexShrink: 0, transition: "all 0.22s", transform: isHovered ? "scale(1.08) rotate(-4deg)" : "scale(1)" }}>
                     {item.emoji}
                   </div>
 
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontFamily: "var(--serif)", fontSize: 17, color: "#faf8f4", marginBottom: 4, lineHeight: 1.25, fontWeight: 400 }}>
+                    <div style={{ fontFamily: "var(--serif)", fontSize: 18, color: isHovered ? "#fff" : "#faf8f4", marginBottom: 6, lineHeight: 1.2, transition: "color 0.2s" }}>
                       {item.name}
                     </div>
                     {item.description && (
-                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.3)", marginBottom: 14, lineHeight: 1.6 }}>
+                      <div style={{ fontSize: 12, color: "rgba(255,255,255,0.28)", marginBottom: 16, lineHeight: 1.65, letterSpacing: "0.01em" }}>
                         {item.description}
                       </div>
                     )}
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: item.description ? 0 : 14 }}>
-                      <span style={{ fontFamily: "var(--serif)", fontSize: 20, color: isHovered ? "var(--gold3)" : "var(--gold2)", fontWeight: 300, transition: "color 0.2s" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: item.description ? 0 : 16 }}>
+                      <span style={{ fontFamily: "var(--serif)", fontSize: 22, color: isHovered ? accent : "#c4965a", fontWeight: 300, transition: "color 0.2s" }}>
                         ${item.price.toFixed(2)}
                       </span>
                       <button
                         onClick={() => add(item)}
-                        style={{
-                          background: isAdded ? "var(--gold)" : isHovered ? "rgba(196,150,90,0.2)" : "rgba(196,150,90,0.08)",
-                          color: isAdded ? "#0a0906" : "var(--gold2)",
-                          border: `1px solid ${isAdded ? "var(--gold)" : "rgba(196,150,90,0.3)"}`,
-                          borderRadius: 10,
-                          padding: "9px 20px",
-                          fontSize: 11,
-                          letterSpacing: "0.1em",
-                          textTransform: "uppercase",
-                          cursor: "pointer",
-                          fontFamily: "var(--sans)",
-                          fontWeight: 600,
-                          transition: "all 0.2s",
-                          minWidth: 90,
-                        }}
+                        style={{ background: isAdded ? accent : isHovered ? `${accent}22` : "rgba(255,255,255,0.05)", color: isAdded ? "#080706" : isHovered ? accent : "rgba(255,255,255,0.45)", border: `1px solid ${isAdded ? accent : isHovered ? accent + "60" : "rgba(255,255,255,0.08)"}`, borderRadius: 12, padding: "10px 22px", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", cursor: "pointer", fontFamily: "var(--sans)", fontWeight: 700, transition: "all 0.2s", minWidth: 100, boxShadow: isAdded ? `0 4px 16px ${accent}50` : "none" }}
                       >
-                        {isAdded ? "✓ Added" : "+ Add"}
+                        {isAdded ? "✓ Added!" : "+ Add"}
                       </button>
                     </div>
                   </div>
@@ -262,30 +251,11 @@ export default function Menu() {
 
       {/* Floating cart */}
       {cart.length > 0 && !cartOpen && (
-        <div style={{ position: "fixed", bottom: 32, left: "50%", transform: "translateX(-50%)", zIndex: 150, animation: "scaleIn 0.3s ease" }}>
-          <button
-            onClick={() => setCartOpen(true)}
-            style={{
-              background: "linear-gradient(135deg, var(--gold) 0%, #e0a060 100%)",
-              color: "#0a0906",
-              border: "none",
-              borderRadius: 32,
-              padding: "16px 36px",
-              fontSize: 13,
-              fontWeight: 700,
-              letterSpacing: "0.06em",
-              cursor: "pointer",
-              fontFamily: "var(--sans)",
-              boxShadow: "0 12px 40px rgba(196,150,90,0.5), 0 4px 12px rgba(0,0,0,0.4)",
-              whiteSpace: "nowrap",
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
-            <span>🛒</span>
+        <div style={{ position: "fixed", bottom: 36, left: "50%", transform: "translateX(-50%)", zIndex: 150 }}>
+          <button onClick={() => setCartOpen(true)} style={{ background: `linear-gradient(135deg, ${accent} 0%, ${accent}cc 100%)`, color: "#080706", border: "none", borderRadius: 40, padding: "17px 40px", fontSize: 13, fontWeight: 700, letterSpacing: "0.06em", cursor: "pointer", fontFamily: "var(--sans)", boxShadow: `0 16px 48px ${accent}60, 0 4px 16px rgba(0,0,0,0.5)`, whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 12, animation: "scaleIn 0.3s ease" }}>
+            <span style={{ fontSize: 18 }}>🛒</span>
             <span>View Order</span>
-            <span style={{ background: "rgba(0,0,0,0.15)", borderRadius: 12, padding: "2px 10px" }}>${total.toFixed(2)}</span>
+            <span style={{ background: "rgba(0,0,0,0.18)", borderRadius: 14, padding: "3px 12px", fontSize: 12 }}>${total.toFixed(2)}</span>
           </button>
         </div>
       )}
@@ -293,50 +263,47 @@ export default function Menu() {
       {/* Cart panel */}
       {cartOpen && (
         <div style={{ position: "fixed", inset: 0, zIndex: 200 }}>
-          <div onClick={() => setCartOpen(false)} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }} />
-          <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 400, background: "#100e0a", borderLeft: "1px solid rgba(196,150,90,0.15)", display: "flex", flexDirection: "column", animation: "slideIn 0.3s ease" }}>
-
-            {/* Cart header */}
-            <div style={{ padding: "28px 32px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-                <div style={{ fontFamily: "var(--serif)", fontSize: 28, fontWeight: 300, color: "#faf8f4" }}>Your Order</div>
-                <button onClick={() => setCartOpen(false)} style={{ background: "rgba(255,255,255,0.06)", border: "none", color: "rgba(255,255,255,0.4)", width: 32, height: 32, borderRadius: "50%", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
+          <div onClick={() => setCartOpen(false)} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.8)", backdropFilter: "blur(12px)" }} />
+          <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 420, background: "#0d0b08", borderLeft: "1px solid rgba(255,255,255,0.07)", display: "flex", flexDirection: "column", animation: "slideIn 0.3s ease" }}>
+            <div style={{ padding: "32px 36px 24px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+                <div>
+                  <div style={{ fontFamily: "var(--serif)", fontSize: 32, fontWeight: 300, color: "#faf8f4", lineHeight: 1, marginBottom: 6 }}>Your Order</div>
+                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", letterSpacing: "0.06em" }}>{cart.length} item{cart.length !== 1 ? "s" : ""} · Sha Muu</div>
+                </div>
+                <button onClick={() => setCartOpen(false)} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.4)", width: 36, height: 36, borderRadius: "50%", fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
               </div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)" }}>{cart.length} item{cart.length !== 1 ? "s" : ""}</div>
             </div>
 
-            {/* Cart items */}
-            <div style={{ flex: 1, overflowY: "auto", padding: "20px 32px" }}>
+            <div style={{ flex: 1, overflowY: "auto", padding: "20px 36px" }}>
               {cart.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "80px 0" }}>
-                  <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }}>🛒</div>
-                  <div style={{ fontFamily: "var(--serif)", fontSize: 18, color: "rgba(255,255,255,0.2)", fontStyle: "italic" }}>Nothing added yet</div>
+                  <div style={{ fontSize: 56, marginBottom: 20, opacity: 0.2 }}>🛒</div>
+                  <div style={{ fontFamily: "var(--serif)", fontSize: 20, color: "rgba(255,255,255,0.15)", fontStyle: "italic" }}>Nothing added yet</div>
                 </div>
               ) : cart.map((item, idx) => (
-                <div key={idx} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(196,150,90,0.08)", border: "1px solid rgba(196,150,90,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>
-                    {item.emoji}
-                  </div>
+                <div key={idx} style={{ display: "flex", alignItems: "center", gap: 16, padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                  <div style={{ width: 46, height: 46, borderRadius: 12, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>{item.emoji}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontFamily: "var(--serif)", fontSize: 15, color: "#faf8f4", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</div>
-                    <div style={{ fontSize: 13, color: "var(--gold2)", marginTop: 2 }}>${item.price.toFixed(2)}</div>
+                    <div style={{ fontFamily: "var(--serif)", fontSize: 15, color: "#faf8f4", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 3 }}>{item.name}</div>
+                    <div style={{ fontSize: 13, color: "#c4965a" }}>${item.price.toFixed(2)}</div>
                   </div>
-                  <button onClick={() => remove(idx)} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.3)", width: 28, height: 28, borderRadius: "50%", fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>×</button>
+                  <button onClick={() => remove(idx)} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.25)", width: 30, height: 30, borderRadius: "50%", fontSize: 16, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>×</button>
                 </div>
               ))}
             </div>
 
-            {/* Checkout */}
             {cart.length > 0 && (
-              <div style={{ padding: "24px 32px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 24 }}>
-                  <span style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)" }}>Total</span>
-                  <span style={{ fontFamily: "var(--serif)", fontSize: 36, fontWeight: 300, color: "var(--gold2)" }}>${total.toFixed(2)}</span>
+              <div style={{ padding: "24px 36px 32px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+                  <span style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(255,255,255,0.3)" }}>Order Total</span>
+                  <span style={{ fontFamily: "var(--serif)", fontSize: 40, fontWeight: 300, color: "#e0bc8a", lineHeight: 1 }}>${total.toFixed(2)}</span>
                 </div>
-                <button onClick={checkout} style={{ width: "100%", background: "linear-gradient(135deg, var(--gold) 0%, #e0a060 100%)", color: "#0a0906", border: "none", borderRadius: 12, padding: "18px 0", fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 700, cursor: "pointer", fontFamily: "var(--sans)", boxShadow: "0 8px 24px rgba(196,150,90,0.3)" }}>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.15)", marginBottom: 24, textAlign: "right" }}>+ tax at checkout</div>
+                <button onClick={checkout} style={{ width: "100%", background: "linear-gradient(135deg, #c4965a 0%, #e0a060 100%)", color: "#080706", border: "none", borderRadius: 14, padding: "20px 0", fontSize: 13, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 700, cursor: "pointer", fontFamily: "var(--sans)", boxShadow: "0 8px 32px rgba(196,150,90,0.4)", marginBottom: 12 }}>
                   Proceed to Checkout →
                 </button>
-                <button onClick={() => setCartOpen(false)} style={{ width: "100%", background: "transparent", color: "rgba(255,255,255,0.2)", border: "none", padding: "14px 0", fontSize: 11, cursor: "pointer", fontFamily: "var(--sans)", marginTop: 8, letterSpacing: "0.08em" }}>
+                <button onClick={() => setCartOpen(false)} style={{ width: "100%", background: "transparent", color: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 14, padding: "14px 0", fontSize: 11, cursor: "pointer", fontFamily: "var(--sans)", letterSpacing: "0.08em" }}>
                   Continue Ordering
                 </button>
               </div>
