@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const ADMIN_PASSWORD = "shamuu2025";
 
-const CATEGORIES = ["Appetizers", "Sushi Rolls", "Bowls", "Burmese & Asian", "Curry", "Drinks"];
+const CATEGORIES = ["Appetizers","Special Rolls","Deep Fried Sushi Rolls","Fusion Bowls","Nigiri","Regular Rolls","Bento Box","Fried Rice & Noodle","Noodle Soup & Salad","Salad & Sides","Rice Bowls","Beverages","Dessert"];
 const EMOJIS = ["🍣","🍤","🥟","🌯","🍜","🍝","🍛","🍲","🥣","🥩","🥗","🍗","🫘","🍵","🧋","🥭","🥤","💧","🌈","🍱","🍽️"];
 
 type MenuItem = {
